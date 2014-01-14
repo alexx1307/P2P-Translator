@@ -2,7 +2,7 @@ package tracker;
 
 import java.util.StringTokenizer;
 
-import peers.PeerInfo;
+import peers.Peer;
 
 /**
  * Protokol komunikacyjny pomiedzy trackerem a peerem.
@@ -22,7 +22,7 @@ public class TrackerProtocol {
 
 		if (input.equals("GET_PEERS")) {
 			result = new StringBuilder("GET_PEERS OK\n");
-			for (PeerInfo peer : tracker.getPeers()) {
+			for (Peer peer : tracker.getPeers()) {
 				result.append("host: " + peer.getHost() + " port: "
 						+ peer.getPort() + "\n");
 			}

@@ -5,38 +5,40 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
 
+import peers.Peer;
 
-import peers.PeerHandler;
-import peers.PeerInfo;
-
+/**
+ * Klasa trackera.
+ * 
+ * @author lukasz
+ *
+ */
 public class Tracker extends Thread {
 	private int port;
-	private LinkedList<PeerInfo> peers;
+	private LinkedList<Peer> peers;
 
 	public Tracker(int port) {
 		this.port = port;
 		peers = new LinkedList<>();
 	}
 	
-	public LinkedList<PeerInfo> getPeers(){
+	public LinkedList<Peer> getPeers(){
 		return peers;
 	}
 	
 	public void registryPeer(String host, int port){
-		peers.add(new PeerInfo(port,host));
+		peers.add(new Peer(port,host));
 	}
 
 	@Override
 	public void run() {
-
 		boolean listen = true;
-		ServerSocket serversocket = null;
-		try {
-			
-			serversocket = new ServerSocket(port);
+	
+		try(ServerSocket serversocket = new ServerSocket(port)){
 			while (listen) {
 				Socket socket = serversocket.accept();
-				new PeerHandler(socket, peers, this).start();
+				System.out.println("address: "+socket.getInetAddress());
+				new TrackerConnection(socket, peers, this).start();
 			}
 			
 		} catch (IOException e) {

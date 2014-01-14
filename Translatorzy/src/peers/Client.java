@@ -1,12 +1,12 @@
 package peers;
 
 import java.io.BufferedReader;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.LinkedList;
+import java.util.Scanner;
 import java.util.StringTokenizer;
 
 /**
@@ -15,23 +15,38 @@ import java.util.StringTokenizer;
  * @author lukasz
  * 
  */
-public class PeerClient {
+public class Client extends Thread {
 
-	private int trackerport;
-	private String trackerhost;
-	private LinkedList<PeerInfo> peers;
+	private int trackerPort;
+	private String trackerHost;
+	private LinkedList<Peer> peers;
+	private LinkedList<Peer> activeTranslators;
+	private Socket socket;
 
-	public PeerClient(String host, int port) {
-		this.trackerport = port;
-		this.trackerhost = host;
+	public Client(Host host) {
+		this.trackerHost = host.getTrackerHost();
+		this.trackerPort = host.getTrackerPort();
 		peers = new LinkedList<>();
 	}
 
+	@Override
+	public void run() {
+		System.out.println("Starting client");
+		Scanner in = new Scanner(System.in);
+		while (true) {
+			in.next();
+			translate();
+		}
+	}
+
 	public void translate() {
+		System.out.println("Starting translate");
+		activeTranslators = new LinkedList<>();
 		getPeers();
-		for (PeerInfo peer : peers) {
+		for (Peer peer : peers) {
 			connectToPeer(peer.getHost(), peer.getPort());
 		}
+		System.out.println("Translate end");
 	}
 
 	public void connectToPeer(String host, int port) {
@@ -39,26 +54,43 @@ public class PeerClient {
 
 			System.out
 					.println("Connecting to peer: " + host + " port: " + port);
-			Socket socket = new Socket(host, port);
+			socket = new Socket(host, port);
+
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			BufferedReader in = new BufferedReader(new InputStreamReader(
 					socket.getInputStream()));
 
 			String fromServer;
 
-			out.println("HELLO");
+			out.println("TRANSLATE");
 			while ((fromServer = in.readLine()) != null) {
-				System.out.println("Server response: " + fromServer);
-				if (fromServer.equals("BYE"))
-					break;
-				out.println("BYE");
+
+				StringTokenizer st = new StringTokenizer(fromServer);
+				String shost = null;
+				int sport = 0;
+				if (st.hasMoreTokens())
+					st.nextToken();
+				if (st.hasMoreTokens())
+					shost = st.nextToken();
+				if (st.hasMoreTokens())
+					sport = Integer.parseInt(st.nextToken());
+
+				System.out.println("adding host: " + shost + " port: " + sport
+						+ " to activeTrans");
+				activeTranslators.add(new Peer(sport, shost));
+
+				break;
 			}
-
-			socket.close();
-			System.out.println("Connection end.");
-
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			if (socket != null) {
+				try {
+					socket.close();
+					System.out.println("Connection end.");
+				} catch (IOException ex) {
+				}
+			}
 		}
 
 	}
@@ -66,7 +98,7 @@ public class PeerClient {
 	public void getPeers() {
 		peers.clear();
 		try {
-			Socket socket = new Socket(trackerhost, trackerport);
+			socket = new Socket(trackerHost, trackerPort);
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			BufferedReader in = new BufferedReader(new InputStreamReader(
 					socket.getInputStream()));
@@ -90,14 +122,20 @@ public class PeerClient {
 						port = Integer.parseInt(st.nextToken());
 
 					System.out.println("Adding peer: " + host + " " + port);
-					peers.add(new PeerInfo(port, host));
+					peers.add(new Peer(port, host));
 					fromServer = in.readLine();
 				}
 			}
-			socket.close();
-
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			if (socket != null) {
+				try {
+					socket.close();
+				} catch (IOException ex) {
+				}
+			}
 		}
+
 	}
 }

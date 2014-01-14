@@ -6,11 +6,11 @@ package peers;
  * @author lukasz
  * 
  */
-public class PeerInfo {
+public class Peer {
 	private int port;
 	private String host;
 
-	public PeerInfo(int port, String host) {
+	public Peer(int port, String host) {
 		this.port = port;
 		this.host = host;
 	}
