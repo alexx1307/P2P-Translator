@@ -4,20 +4,14 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-/**
- * Klasa reprezentujaca serwer uruchamiany na kazdym hoscie.
- * 
- * @author lukasz
- *
- */
-public class Server extends Thread {
+public class BFSServer extends Thread {
 
 	private int port;
 	private Host host;
 
-	public Server(Host host) {
+	public BFSServer(Host host) {
 		this.host = host;
-		this.port = host.getServerPort();
+		this.port = host.getBFSServerPort();
 	}
 
 	@Override
@@ -28,9 +22,8 @@ public class Server extends Thread {
 			while (listen) {
 				Socket socket = serverSocket.accept();
 				
-				ClientTranslatorConnection ctConnection = new ClientTranslatorConnection(
+				BFSConnection bfsConnection = new BFSConnection(
 						host, socket);
-				ctConnection.start();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

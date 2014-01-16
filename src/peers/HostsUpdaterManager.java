@@ -13,16 +13,21 @@ import java.util.Timer;
 public class HostsUpdaterManager{
 	private HashSet<Peer> sourcePeers; //peery podane na wejsciu (np tracker)
 	private HashSet<Peer> activePeers; //peery aktualnie aktywne
-	public HostsUpdaterManager(Host host) {
+	private BFSServer bfsServer;
+	private Host host;
+	
+	public HostsUpdaterManager(Host host, BFSServer bfsServer) {
 		activePeers = new HashSet<Peer>();
 		sourcePeers = new HashSet<Peer>();
 		sourcePeers.addAll(host.getTrackers());
+		this.bfsServer = bfsServer;
+		this.host = host;
 	}
 	
 	public void init() {
 		System.out.println("Starting looking for peers");
 		Timer timer = new Timer();
-		timer.schedule(new HostsUpdaterTask(this),10,5000);
+		timer.schedule(new HostsUpdaterTask(this,host),10,5000);
 		
 	}
 
@@ -35,5 +40,10 @@ public class HostsUpdaterManager{
 	public HashSet<Peer> getActivePeers(){
 		return activePeers;
 	}
+
+	public void addPeers(HashSet<Peer> tempSet) {
+		activePeers.addAll(tempSet);
+	}
+	
 	
 }

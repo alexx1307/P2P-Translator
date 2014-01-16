@@ -11,9 +11,10 @@ public class Peer {
 	private String host;
 	private String publicKey;
 	
-	public Peer(int port, String host) {
+	public Peer(int port, String host, String publicKey) {
 		this.port = port;
 		this.host = host;
+		this.publicKey = publicKey;
 	}
 
 	public int getPort() {
@@ -22,5 +23,14 @@ public class Peer {
 
 	public String getHost() {
 		return host;
+	}
+	
+	public String getPublicKey() {
+		return publicKey;
+	}
+	
+	@Override
+	public int hashCode() {
+		 return publicKey.hashCode();
 	}
 }

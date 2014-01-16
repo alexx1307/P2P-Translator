@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -22,11 +23,13 @@ public class Client extends Thread {
 	private LinkedList<Peer> peers;
 	private LinkedList<Peer> activeTranslators;
 	private Socket socket;
+	private Host host;
 
 	public Client(Host host) {
 		this.trackerHost = host.getTrackerHost();
 		this.trackerPort = host.getTrackerPort();
 		peers = new LinkedList<>();
+		this.host = host;
 	}
 
 	@Override
@@ -42,7 +45,7 @@ public class Client extends Thread {
 	public void translate() {
 		System.out.println("Starting translate");
 		activeTranslators = new LinkedList<>();
-		getPeers();
+		HashSet<Peer> peers = host.getHostsUpdaterManager().getActivePeers();
 		for (Peer peer : peers) {
 			connectToPeer(peer.getHost(), peer.getPort());
 		}
@@ -77,8 +80,10 @@ public class Client extends Thread {
 
 				System.out.println("adding host: " + shost + " port: " + sport
 						+ " to activeTrans");
-				activeTranslators.add(new Peer(sport, shost));
+				//activeTranslators.add(new Peer(sport, shost));
+				
 
+				
 				break;
 			}
 		} catch (IOException e) {
@@ -94,7 +99,7 @@ public class Client extends Thread {
 		}
 
 	}
-
+/*
 	public void getPeers() {
 		peers.clear();
 		try {
@@ -137,5 +142,5 @@ public class Client extends Thread {
 			}
 		}
 
-	}
+	}*/
 }

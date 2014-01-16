@@ -27,7 +27,7 @@ public class Tracker extends Thread {
 	}
 	
 	public void registryPeer(String host, int port){
-		peers.add(new Peer(port,host));
+		peers.add(new Peer(port,host,""));
 	}
 
 	@Override

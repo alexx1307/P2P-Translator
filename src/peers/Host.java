@@ -15,12 +15,13 @@ public class Host {
 
 	private String hostName;
 	private int serverPort;
-
+	private int BFSServerPort;
 	Encrypter encrypter;
 	
 	private Client client;
 	private Translator translator;
 	private Server server;
+	private BFSServer bfsServer;
 	private HostsUpdaterManager hostsUpdater;
 	
 	private boolean isTranslator;
@@ -31,12 +32,16 @@ public class Host {
 		trackerHost = "localhost";
 		trackerPort = 8000;
 		serverPort = findFreePort();
-
+		
 		encrypter = new Encrypter();
 		
 		server = new Server(this);
+		BFSServerPort = findFreePort();
+		
+		bfsServer = BFSServer(this);
+		
 		client = new Client(this);
-		hostsUpdater = new HostsUpdaterManager(this);
+		hostsUpdater = new HostsUpdaterManager(this,bfsServer);
 		
 	    server.start();
 	    client.start();
@@ -44,6 +49,11 @@ public class Host {
 	    
 	    if(isTranslator)
 			translator = new Translator(this);
+	}
+
+	private BFSServer BFSServer(Host host) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public String getTrackerHost() {
@@ -58,6 +68,9 @@ public class Host {
 		return serverPort;
 	}
 
+	public int getBFSServerPort() {
+		return BFSServerPort;
+	}
 	public String getHostName() {
 		return hostName;
 	}
@@ -94,8 +107,12 @@ public class Host {
 
 	public Collection<Peer> getTrackers() {
 		LinkedList<Peer> peers = new LinkedList<Peer>();
-		peers.add(new Peer(getTrackerPort(), getTrackerHost()));
+		peers.add(new Peer(getTrackerPort(), getTrackerHost(), "public key trackera"));
 		return peers;
+	}
+
+	public HostsUpdaterManager getHostsUpdaterManager() {
+		return hostsUpdater;
 	}
 
 }
