@@ -9,7 +9,8 @@ package peers;
 public class Peer {
 	private int port;
 	private String host;
-
+	private String publicKey;
+	
 	public Peer(int port, String host) {
 		this.port = port;
 		this.host = host;

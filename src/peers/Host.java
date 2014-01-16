@@ -1,6 +1,8 @@
 package peers;
 
 import java.net.ServerSocket;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Klasa reprezentujaca hosta. Argument 1-translator jest aktywyny.
@@ -14,9 +16,12 @@ public class Host {
 	private String hostName;
 	private int serverPort;
 
+	Encrypter encrypter;
+	
 	private Client client;
 	private Translator translator;
 	private Server server;
+	private HostsUpdaterManager hostsUpdater;
 	
 	private boolean isTranslator;
 
@@ -27,11 +32,15 @@ public class Host {
 		trackerPort = 8000;
 		serverPort = findFreePort();
 
+		encrypter = new Encrypter();
+		
 		server = new Server(this);
 		client = new Client(this);
-	
+		hostsUpdater = new HostsUpdaterManager(this);
+		
 	    server.start();
 	    client.start();
+	    hostsUpdater.init();
 	    
 	    if(isTranslator)
 			translator = new Translator(this);
@@ -81,6 +90,12 @@ public class Host {
 		int isTranslator = Integer.parseInt(args[0]);
 		System.out.println("Starting new host");
 		Host host = new Host(isTranslator==1);
+	}
+
+	public Collection<Peer> getTrackers() {
+		LinkedList<Peer> peers = new LinkedList<Peer>();
+		peers.add(new Peer(getTrackerPort(), getTrackerHost()));
+		return peers;
 	}
 
 }

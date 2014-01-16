@@ -33,7 +33,7 @@ public class Tracker extends Thread {
 	@Override
 	public void run() {
 		boolean listen = true;
-	
+		System.out.println("Starting tracker on port "+port);
 		try(ServerSocket serversocket = new ServerSocket(port)){
 			while (listen) {
 				Socket socket = serversocket.accept();
