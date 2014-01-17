@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.TimerTask;
 
 public class HostsUpdaterTask extends TimerTask {
-	HashSet<Peer> sourcePeers;
+	HashSet<BasePeer> sourcePeers;
 	Host host;
 	HostsUpdaterManager manager;
 	public HostsUpdaterTask(HostsUpdaterManager hostsUpdaterManager, Host host) {
@@ -21,19 +21,20 @@ public class HostsUpdaterTask extends TimerTask {
 	public void run() {
 		System.out.println("Looking for active peers");
 		sourcePeers= manager.getSourcePeers();
-		for(Peer peer: sourcePeers){
+		for(BasePeer peer: sourcePeers){
 			SendBFSRequest(peer);
 		
 		}
 	}
 
-	private void SendBFSRequest(Peer peer) {
+	private void SendBFSRequest(BasePeer peer) {
 		Socket socket = null;
 		PrintWriter out = null;
 		try {
-			socket = new Socket(peer.getHost(),peer.getPort(), InetAddress.getLocalHost(), host.getBFSServerPort());
+			socket = new Socket(peer.getHost(),peer.getPort());
 			out = new PrintWriter(socket.getOutputStream(), true);
 			out.println("GET PEERS");
+			out.println(""+host.getBFSServerPort());
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

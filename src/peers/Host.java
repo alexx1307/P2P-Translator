@@ -1,6 +1,8 @@
 package peers;
 
+import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -13,10 +15,12 @@ public class Host {
 	private String trackerHost;
 	private int trackerPort;
 
+	private LinkedList<BasePeer> trackers;
+	
 	private String hostName;
 	private int serverPort;
 	private int BFSServerPort;
-	Encrypter encrypter;
+	private Encrypter encrypter;
 	
 	private Client client;
 	private Translator translator;
@@ -26,11 +30,26 @@ public class Host {
 	
 	private boolean isTranslator;
 
+	//konstruktor trackera
+	public Host(){
+		this.isTranslator=false;
+		trackers = new LinkedList<BasePeer>();
+		BFSServerPort = 8000;
+		bfsServer = new BFSServer(this);
+		hostsUpdater = new HostsUpdaterManager(this, bfsServer);
+		bfsServer.start();
+		hostsUpdater.init();
+	}
+	
 	public Host(boolean isTranslator) {
+		
+		
 		this.isTranslator=isTranslator;
 		hostName = "localhost";
 		trackerHost = "localhost";
 		trackerPort = 8000;
+		trackers = new LinkedList<BasePeer>();
+		trackers. add(new BasePeer(trackerPort, trackerHost));
 		serverPort = findFreePort();
 		
 		encrypter = new Encrypter();
@@ -38,13 +57,14 @@ public class Host {
 		server = new Server(this);
 		BFSServerPort = findFreePort();
 		
-		bfsServer = BFSServer(this);
+		bfsServer = new BFSServer(this);
 		
 		client = new Client(this);
 		hostsUpdater = new HostsUpdaterManager(this,bfsServer);
 		
 	    server.start();
 	    client.start();
+	    bfsServer.start();
 	    hostsUpdater.init();
 	    
 	    if(isTranslator)
@@ -99,20 +119,18 @@ public class Host {
 		return port;
 	}
 
-	public static void main(String[] args) {
-		int isTranslator = Integer.parseInt(args[0]);
-		System.out.println("Starting new host");
-		Host host = new Host(isTranslator==1);
-	}
-
-	public Collection<Peer> getTrackers() {
-		LinkedList<Peer> peers = new LinkedList<Peer>();
-		peers.add(new Peer(getTrackerPort(), getTrackerHost(), "public key trackera"));
-		return peers;
+	public Collection<BasePeer> getTrackers() {
+		return trackers;
 	}
 
 	public HostsUpdaterManager getHostsUpdaterManager() {
 		return hostsUpdater;
+	}
+	
+	public static void main(String[] args) {
+		int isTranslator = Integer.parseInt(args[0]);
+		System.out.println("Starting new host");
+		Host host = new Host(isTranslator==1);
 	}
 
 }

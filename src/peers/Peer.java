@@ -7,22 +7,24 @@ package peers;
  * 
  */
 public class Peer {
-	private int port;
-	private String host;
+	private BasePeer basePeer;
+	private int controlPort;
 	private String publicKey;
-	
-	public Peer(int port, String host, String publicKey) {
-		this.port = port;
-		this.host = host;
+	public Peer(BasePeer basePeer, int controlPort, String publicKey) {
+		this.basePeer = basePeer;
+		this.controlPort = controlPort;
 		this.publicKey = publicKey;
 	}
 
+	public int getBFSPort() {
+		return basePeer.getPort();
+	}
 	public int getPort() {
-		return port;
+		return controlPort;
 	}
 
 	public String getHost() {
-		return host;
+		return basePeer.getHost();
 	}
 	
 	public String getPublicKey() {
@@ -32,5 +34,10 @@ public class Peer {
 	@Override
 	public int hashCode() {
 		 return publicKey.hashCode();
+	}
+
+	public BasePeer getBasePeer() {
+		// TODO Auto-generated method stub
+		return basePeer;
 	}
 }

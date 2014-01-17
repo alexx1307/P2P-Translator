@@ -32,11 +32,13 @@ public class BFSConnection  {
 			HashSet<Peer> tempSet = new HashSet<Peer>();
 			while ((inputLine = in.readLine()) != null) {
 				if(inputLine.equals("GET PEERS")){
+					inputLine =in.readLine();
+					manager.addPeer(new BasePeer(Integer.parseInt(inputLine), respondSocket.getInetAddress().toString()));
 					state = 1;
 					HashSet<Peer> peers = manager.getActivePeers();
 					out.println("PEERS RESPOND");
 					for(Peer peer : peers){
-						String peerLine = "Peer: "+peer.getHost()+" "+peer.getPort()+" "+peer.getPublicKey();
+						String peerLine = "Peer: "+peer.getHost()+" "+peer.getBFSPort()+" "+peer.getPort()+" "+peer.getPublicKey();
 						out.println(peerLine);
 					}
 				}else if(inputLine.equals("PEERS RESPOND")){
@@ -45,18 +47,20 @@ public class BFSConnection  {
 				}else if(state==2){
 					StringTokenizer st = new StringTokenizer(inputLine);
 					int _port = 0;
+					int _bfsPort = 0;
 					String _host = null;
 					String _key = null;
-					int sport = 0;
 					if (st.hasMoreTokens())
 						st.nextToken();
 					if (st.hasMoreTokens())
 						_host = st.nextToken();
 					if (st.hasMoreTokens())
+						_bfsPort = Integer.parseInt(st.nextToken());
+					if (st.hasMoreTokens())
 						_port = Integer.parseInt(st.nextToken());
 					if (st.hasMoreTokens())
 						_key = st.nextToken();
-					Peer peer = new Peer(_port, _host, _key);
+					Peer peer = new Peer(new BasePeer(_bfsPort,_host),_port,_key);
 					tempSet.add(peer);
 				}else{
 					break;

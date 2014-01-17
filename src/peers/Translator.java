@@ -31,7 +31,7 @@ public class Translator {
 
 		System.out.println("Starting translator on port: " + port);
 
-		register();
+		//register();
 	}
 
 	public synchronized String translate(String s) {
