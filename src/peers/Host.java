@@ -36,6 +36,7 @@ public class Host {
 		trackers = new LinkedList<BasePeer>();
 		BFSServerPort = 8000;
 		bfsServer = new BFSServer(this);
+		encrypter = new Encrypter();
 		hostsUpdater = new HostsUpdaterManager(this, bfsServer);
 		bfsServer.start();
 		hostsUpdater.init();
@@ -45,8 +46,8 @@ public class Host {
 		
 		
 		this.isTranslator=isTranslator;
-		hostName = "localhost";
-		trackerHost = "localhost";
+		hostName = "127.0.0.1";
+		trackerHost = "127.0.0.1";
 		trackerPort = 8000;
 		trackers = new LinkedList<BasePeer>();
 		trackers. add(new BasePeer(trackerPort, trackerHost));
@@ -125,6 +126,15 @@ public class Host {
 
 	public HostsUpdaterManager getHostsUpdaterManager() {
 		return hostsUpdater;
+	}
+	
+	
+	public Peer getSelfPeer() {
+		return new Peer(new BasePeer(getBFSServerPort(), getHostName()), getServerPort(), getPublicKey());
+	}
+
+	private String getPublicKey() {
+		return encrypter.getPublicKey();
 	}
 	
 	public static void main(String[] args) {

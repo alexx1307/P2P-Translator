@@ -21,7 +21,6 @@ public class BFSServer extends Thread {
 		try (ServerSocket serverSocket = new ServerSocket(port)) {
 			while (listen) {
 				Socket socket = serverSocket.accept();
-				
 				BFSConnection bfsConnection = new BFSConnection(
 						host, socket);
 			}

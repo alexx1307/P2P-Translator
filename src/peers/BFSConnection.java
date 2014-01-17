@@ -17,6 +17,7 @@ public class BFSConnection  {
 		this.socket = socket;
 		this.host=host;
 		manager = host.getHostsUpdaterManager();
+		interpretRequest();
 	}
 
 	public void interpretRequest() {
@@ -24,17 +25,18 @@ public class BFSConnection  {
 			
 			BufferedReader in = new BufferedReader(new InputStreamReader(
 					socket.getInputStream()));
-            
-			respondSocket = new Socket(socket.getInetAddress(),socket.getPort());
-			PrintWriter out = new PrintWriter(respondSocket.getOutputStream(), true);
+			
 			String inputLine, outputLine;
 			int state = 0;
 			HashSet<Peer> tempSet = new HashSet<Peer>();
 			while ((inputLine = in.readLine()) != null) {
 				if(inputLine.equals("GET PEERS")){
 					inputLine =in.readLine();
-					manager.addPeer(new BasePeer(Integer.parseInt(inputLine), respondSocket.getInetAddress().toString()));
+					int bfsPort=Integer.parseInt(inputLine);
+					manager.addPeer(new BasePeer(bfsPort, socket.getInetAddress().getHostAddress()));
 					state = 1;
+					respondSocket = new Socket(socket.getInetAddress().getHostAddress(),bfsPort);
+					PrintWriter out = new PrintWriter(respondSocket.getOutputStream(), true);
 					HashSet<Peer> peers = manager.getActivePeers();
 					out.println("PEERS RESPOND");
 					for(Peer peer : peers){
