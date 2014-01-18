@@ -23,6 +23,7 @@ public class HostsUpdaterTask extends TimerTask {
 		for(BasePeer peer: sourcePeers){
 			SendBFSRequest(peer);
 		}
+		manager.flipBuffers();
 	}
 
 	private void SendBFSRequest(BasePeer peer) {

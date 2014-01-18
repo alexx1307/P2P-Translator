@@ -54,6 +54,7 @@ public class HostsUpdaterManager{
 	public HashSet<Peer> getActivePeers(){
 		HashSet<Peer> res = activePeers;
 		res.addAll(tempPeers);
+		
 		return res;
 	}
 

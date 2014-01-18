@@ -47,7 +47,12 @@ public class Client extends Thread {
 		activeTranslators = new LinkedList<>();
 		HashSet<Peer> peers = host.getHostsUpdaterManager().getActivePeers();
 		for (Peer peer : peers) {
+			System.out.println(peer.getHost()+" "+peer.getPort()+" "+peer.getBFSPort());
+			try{
 			connectToPeer(peer.getHost(), peer.getPort());
+			}catch(Exception e){
+			
+			}
 		}
 		System.out.println("Translate end");
 	}
