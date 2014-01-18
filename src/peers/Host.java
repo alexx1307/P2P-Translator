@@ -3,6 +3,7 @@ package peers;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
+import java.security.PublicKey;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -133,8 +134,8 @@ public class Host {
 		return new Peer(new BasePeer(getBFSServerPort(), getHostName()), getServerPort(), getPublicKey());
 	}
 
-	public String getPublicKey() {
-		return encrypter.getPublicKey();
+	public PublicKey getPublicKey() {
+		return (PublicKey) encrypter.getPublicKey();
 	}
 	
 	public static void main(String[] args) {

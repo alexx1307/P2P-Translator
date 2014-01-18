@@ -1,5 +1,7 @@
 package peers;
 
+import java.security.PublicKey;
+
 /**
  * Klasa informacyjna.
  * 
@@ -9,8 +11,8 @@ package peers;
 public class Peer {
 	private BasePeer basePeer;
 	private int controlPort;
-	private String publicKey;
-	public Peer(BasePeer basePeer, int controlPort, String publicKey) {
+	private PublicKey publicKey;
+	public Peer(BasePeer basePeer, int controlPort, PublicKey publicKey) {
 		this.basePeer = basePeer;
 		this.controlPort = controlPort;
 		this.publicKey = publicKey;
@@ -27,7 +29,7 @@ public class Peer {
 		return basePeer.getHost();
 	}
 	
-	public String getPublicKey() {
+	public PublicKey getPublicKey() {
 		return publicKey;
 	}
 	

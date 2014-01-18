@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.security.interfaces.RSAPublicKey;
 import java.util.HashSet;
 import java.util.TimerTask;
 
@@ -33,9 +34,10 @@ public class HostsUpdaterTask extends TimerTask {
 			socket = new Socket(peer.getHost(),peer.getPort());
 			out = new PrintWriter(socket.getOutputStream(), true);
 			out.println("GET PEERS");
-			out.println(""+host.getBFSServerPort());
-			out.println(""+host.getServerPort());
-			out.println(""+host.getPublicKey());
+			out.println(host.getBFSServerPort());
+			out.println(host.getServerPort());
+			out.println(((RSAPublicKey)host.getPublicKey()).getModulus().toString());
+			out.println(((RSAPublicKey)host.getPublicKey()).getPublicExponent().toString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			System.out.println("Error while connecting to source peer");

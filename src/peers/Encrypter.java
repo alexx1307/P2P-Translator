@@ -1,11 +1,15 @@
 package peers;
 
+import java.math.BigInteger;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.BadPaddingException;
@@ -59,14 +63,14 @@ public class Encrypter {
 
 	}
 
-	public String code(String input, String otherPublicKey) {
+	public String code(String input, PublicKey otherPublicKey) {
 		byte[] in;
 		try {
 			//in = new BASE64Decoder().decodeBuffer(input);
 			in = input.getBytes("UTF-8");
 
-			PublicKey otherPub = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec((new BASE64Decoder().decodeBuffer(otherPublicKey))));
-			cipher.init(Cipher.ENCRYPT_MODE, otherPub);
+			//PublicKey otherPub = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec((new BASE64Decoder().decodeBuffer(otherPublicKey))));
+			cipher.init(Cipher.ENCRYPT_MODE, otherPublicKey);
 			
 			byte[] encrypted = blockCipher(in,Cipher.ENCRYPT_MODE);
 
@@ -81,14 +85,14 @@ public class Encrypter {
 		
 	}
 
-	public String decode(String input, String otherPublicKey) {
+	public String decode(String input, PublicKey otherPublicKey) {
 		byte[] in;
 		try {
 		
 			in = Hex.decodeHex(input.toCharArray());
 			//System.out.println(in.length);
 
-			PublicKey otherPub = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec((new BASE64Decoder().decodeBuffer(otherPublicKey))));
+			//PublicKey otherPub = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec((new BASE64Decoder().decodeBuffer(otherPublicKey))));
 			//cipher.init(Cipher.DECRYPT_MODE, otherPub);
 			//in = cipher.doFinal(in);
 			cipher.init(Cipher.DECRYPT_MODE, privateKey);
@@ -156,8 +160,8 @@ public class Encrypter {
 
 		return toReturn;
 	}
-	public String getPublicKey() {
-		return new BASE64Encoder().encode( publicKey.getEncoded());
+	public Key getPublicKey() {
+		return publicKey;
 
 	}
 	
@@ -170,8 +174,13 @@ public class Encrypter {
 		String res;
 		
 		text = "abcdefghij";
-		mid = enc1.code(text, enc2.getPublicKey());
-		res = enc2.decode(mid, enc1.getPublicKey());
+		mid = enc1.code(text, (PublicKey) enc2.getPublicKey());
+		res = enc2.decode(mid, (PublicKey) enc1.getPublicKey());
 		System.out.println(res);
+	}
+
+	public static PublicKey makePublicKey(BigInteger a , BigInteger b) throws InvalidKeySpecException, NoSuchAlgorithmException {
+		
+		return KeyFactory.getInstance("RSA").generatePublic(new RSAPublicKeySpec(a, b));
 	}
 }
