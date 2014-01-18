@@ -12,7 +12,7 @@ import java.util.Timer;
  */
 public class HostsUpdaterManager{
 	private HashSet<BasePeer> sourcePeers; //peery podane na wejsciu (np tracker)
-	private HashSet<BasePeer> tempPeers; //oniekty ktore sie z nami kontaktowaly
+	private HashSet<Peer> tempPeers; //oniekty ktore sie z nami kontaktowaly
 	private HashSet<Peer> nextPeerSet; //zbior ktory zastapi activePeers (podwojny bufor)
 	private HashSet<Peer> activePeers; //peery aktualnie aktywne
 	private BFSServer bfsServer;
@@ -22,7 +22,7 @@ public class HostsUpdaterManager{
 		activePeers = new HashSet<Peer>();
 		nextPeerSet = new HashSet<Peer>();
 		sourcePeers = new HashSet<BasePeer>();
-		tempPeers = new HashSet<BasePeer>();
+		tempPeers = new HashSet<Peer>();
 		sourcePeers.addAll(host.getTrackers());
 		this.bfsServer = bfsServer;
 		this.host = host;
@@ -41,8 +41,8 @@ public class HostsUpdaterManager{
 			res.add(p.getBasePeer());			
 		}
 
-		for(BasePeer p : tempPeers){
-			res.add(p);			
+		for(Peer p : tempPeers){
+			res.add(p.getBasePeer());			
 		}
 		tempPeers.clear();
 		res.remove(host.getSelfPeer());
@@ -52,15 +52,18 @@ public class HostsUpdaterManager{
 		return res;
 	}
 	public HashSet<Peer> getActivePeers(){
-		return activePeers;
+		HashSet<Peer> res = activePeers;
+		res.addAll(tempPeers);
+		return res;
 	}
 
 	public void addPeers(HashSet<Peer> tempSet) {
 		nextPeerSet.addAll(tempSet);
 	}
 
-	public void addPeer(BasePeer basePeer) {
-		tempPeers.add(basePeer);
+	public void addPeer(Peer peer) {
+		tempPeers.add(peer);
+		
 	}
 	
 	public void flipBuffers(){

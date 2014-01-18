@@ -133,7 +133,7 @@ public class Host {
 		return new Peer(new BasePeer(getBFSServerPort(), getHostName()), getServerPort(), getPublicKey());
 	}
 
-	private String getPublicKey() {
+	public String getPublicKey() {
 		return encrypter.getPublicKey();
 	}
 	

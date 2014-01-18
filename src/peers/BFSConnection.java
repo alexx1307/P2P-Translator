@@ -33,7 +33,10 @@ public class BFSConnection  {
 				if(inputLine.equals("GET PEERS")){
 					inputLine =in.readLine();
 					int bfsPort=Integer.parseInt(inputLine);
-					manager.addPeer(new BasePeer(bfsPort, socket.getInetAddress().getHostAddress()));
+					inputLine =in.readLine();
+					int controlPort=Integer.parseInt(inputLine);
+					String pubKey = in.readLine();
+					manager.addPeer(new Peer( new BasePeer(bfsPort, socket.getInetAddress().getHostAddress()),controlPort,pubKey));
 					state = 1;
 					respondSocket = new Socket(socket.getInetAddress().getHostAddress(),bfsPort);
 					PrintWriter out = new PrintWriter(respondSocket.getOutputStream(), true);

@@ -20,7 +20,6 @@ public class HostsUpdaterTask extends TimerTask {
 	@Override
 	public void run() {
 		sourcePeers= manager.getSourcePeers();
-		manager.flipBuffers();
 		for(BasePeer peer: sourcePeers){
 			SendBFSRequest(peer);
 		}
@@ -34,6 +33,8 @@ public class HostsUpdaterTask extends TimerTask {
 			out = new PrintWriter(socket.getOutputStream(), true);
 			out.println("GET PEERS");
 			out.println(""+host.getBFSServerPort());
+			out.println(""+host.getServerPort());
+			out.println(""+host.getPublicKey());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			System.out.println("Error while connecting to source peer");

@@ -51,8 +51,8 @@ public class Encrypter {
 	public String code(String input, String otherPublicKey) {
 		byte[] in;
 		try {
-			//in = new BASE64Decoder().decodeBuffer(input);
-			in = input.getBytes("UTF-8");
+			in = new BASE64Decoder().decodeBuffer(input);
+			//in = input.getBytes("UTF-8");
 			System.out.println(in.length);
 			Cipher cipher;
 			cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
@@ -61,8 +61,8 @@ public class Encrypter {
 			in = cipher.doFinal(in);
 			//cipher.init(Cipher.ENCRYPT_MODE, privateKey);
 			//in = cipher.doFinal(in);
-			//return new BASE64Encoder().encode(in);
-			return new String(in,"UTF-8");
+			return new BASE64Encoder().encode(in);
+			//return new String(in,"UTF-8");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -74,8 +74,8 @@ public class Encrypter {
 	public String decode(String input, String otherPublicKey) {
 		byte[] in;
 		try {
-			//in = new BASE64Decoder().decodeBuffer(input);
-			in = input.getBytes("UTF-8");
+			in = new BASE64Decoder().decodeBuffer(input);
+			//in = input.getBytes("UTF-8");
 			Cipher cipher;
 			cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 			PublicKey otherPub = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec((new BASE64Decoder().decodeBuffer(otherPublicKey))));
@@ -83,8 +83,8 @@ public class Encrypter {
 			//in = cipher.doFinal(in);
 			cipher.init(Cipher.DECRYPT_MODE, privateKey);
 			in = cipher.doFinal(in);
-			//return new BASE64Encoder().encode(in);
-			return new String(in,"UTF-8");
+			return new BASE64Encoder().encode(in);
+			//return new String(in,"UTF-8");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
