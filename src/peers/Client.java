@@ -47,11 +47,8 @@ public class Client extends Thread {
 		activeTranslators = new LinkedList<>();
 		HashSet<Peer> peers = host.getHostsUpdaterManager().getActivePeers();
 		for (Peer peer : peers) {
-			try {
-				connectToPeer(peer.getHost(), peer.getPort());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			connectToPeer(peer.getHost(), peer.getPort());
+
 		}
 		System.out.println("Translate end");
 	}
@@ -61,6 +58,7 @@ public class Client extends Thread {
 
 			System.out
 					.println("Connecting to peer: " + host + " port: " + port);
+
 			socket = new Socket(host, port);
 
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
