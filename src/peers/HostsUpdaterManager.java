@@ -54,7 +54,13 @@ public class HostsUpdaterManager{
 	public HashSet<Peer> getActivePeers(){
 		HashSet<Peer> res = activePeers;
 		res.addAll(tempPeers);
-		
+		Peer self = host.getSelfPeer();
+		res.remove(self);
+		System.out.println("Self peer = "+self.getHost()+" "+self.getPort()+" "+self.getBFSPort());
+		System.out.println("Active peers number ="+res.size());
+		for(Peer p : res){
+			System.out.println("peer: "+p.getHost()+" "+p.getPort()+" "+p.getBFSPort()+" "+p.equals(self));
+		}
 		return res;
 	}
 

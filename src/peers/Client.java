@@ -47,11 +47,10 @@ public class Client extends Thread {
 		activeTranslators = new LinkedList<>();
 		HashSet<Peer> peers = host.getHostsUpdaterManager().getActivePeers();
 		for (Peer peer : peers) {
-			System.out.println(peer.getHost()+" "+peer.getPort()+" "+peer.getBFSPort());
-			try{
-			connectToPeer(peer.getHost(), peer.getPort());
-			}catch(Exception e){
-			
+			try {
+				connectToPeer(peer.getHost(), peer.getPort());
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 		System.out.println("Translate end");
@@ -85,10 +84,8 @@ public class Client extends Thread {
 
 				System.out.println("adding host: " + shost + " port: " + sport
 						+ " to activeTrans");
-				//activeTranslators.add(new Peer(sport, shost));
-				
+				// activeTranslators.add(new Peer(sport, shost));
 
-				
 				break;
 			}
 		} catch (IOException e) {
@@ -104,48 +101,26 @@ public class Client extends Thread {
 		}
 
 	}
-/*
-	public void getPeers() {
-		peers.clear();
-		try {
-			socket = new Socket(trackerHost, trackerPort);
-			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-			BufferedReader in = new BufferedReader(new InputStreamReader(
-					socket.getInputStream()));
-
-			out.println("GET_PEERS");
-			String fromServer = in.readLine();
-			if (fromServer.equals("GET_PEERS OK")) {
-				fromServer = in.readLine();
-				while (!fromServer.equals("END")) {
-					System.out.println(fromServer);
-					StringTokenizer st = new StringTokenizer(fromServer);
-					String host = null;
-					int port = 0;
-					if (st.hasMoreTokens())
-						st.nextToken();
-					if (st.hasMoreTokens())
-						host = st.nextToken();
-					if (st.hasMoreTokens())
-						st.nextToken();
-					if (st.hasMoreTokens())
-						port = Integer.parseInt(st.nextToken());
-
-					System.out.println("Adding peer: " + host + " " + port);
-					peers.add(new Peer(port, host));
-					fromServer = in.readLine();
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (socket != null) {
-				try {
-					socket.close();
-				} catch (IOException ex) {
-				}
-			}
-		}
-
-	}*/
+	/*
+	 * public void getPeers() { peers.clear(); try { socket = new
+	 * Socket(trackerHost, trackerPort); PrintWriter out = new
+	 * PrintWriter(socket.getOutputStream(), true); BufferedReader in = new
+	 * BufferedReader(new InputStreamReader( socket.getInputStream()));
+	 * 
+	 * out.println("GET_PEERS"); String fromServer = in.readLine(); if
+	 * (fromServer.equals("GET_PEERS OK")) { fromServer = in.readLine(); while
+	 * (!fromServer.equals("END")) { System.out.println(fromServer);
+	 * StringTokenizer st = new StringTokenizer(fromServer); String host = null;
+	 * int port = 0; if (st.hasMoreTokens()) st.nextToken(); if
+	 * (st.hasMoreTokens()) host = st.nextToken(); if (st.hasMoreTokens())
+	 * st.nextToken(); if (st.hasMoreTokens()) port =
+	 * Integer.parseInt(st.nextToken());
+	 * 
+	 * System.out.println("Adding peer: " + host + " " + port); peers.add(new
+	 * Peer(port, host)); fromServer = in.readLine(); } } } catch (IOException
+	 * e) { e.printStackTrace(); } finally { if (socket != null) { try {
+	 * socket.close(); } catch (IOException ex) { } } }
+	 * 
+	 * }
+	 */
 }

@@ -57,13 +57,18 @@ public class Peer {
 				return false;
 		} else if (!basePeer.equals(other.basePeer))
 			return false;
+		
 		if (controlPort != other.controlPort)
 			return false;
+		
 		if (publicKey == null) {
-			if (other.publicKey != null)
+			if (other.publicKey != null){
 				return false;
-		} else if (!publicKey.equals(other.publicKey))
+			}
+		} else if (!publicKey.equals(other.publicKey)){
+			//System.out.println(publicKey+"-------\n"+other.publicKey);
 			return false;
+		}
 		return true;
 	};
 

@@ -2,5 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Users/Luka/Downloads/commons-codec-1.9-bin/commons-codec-1.9/commons-codec-1.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Luka/Downloads/commons-codec-1.9-bin/commons-codec-1.9/commons-codec-1.9-javadoc.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Luka/Downloads/commons-codec-1.9-bin/commons-codec-1.9/commons-codec-1.9-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Luka/Downloads/commons-codec-1.9-bin/commons-codec-1.9/commons-codec-1.9-tests.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Luka/Downloads/commons-codec-1.9-bin/commons-codec-1.9/commons-codec-1.9-test-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
