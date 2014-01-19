@@ -1,0 +1,23 @@
+Moja ma³a ojczyzna
+to Polska
+Piêkny kraj,
+z piêknym morzem
+i górami
+
+Zapraszam wszystkich serdecznie
+Pozdrawiam
+
+					int lineCounter = 0;
+					while (!translateFinished) {
+						Chunk chunk = getLine();
+						if (chunk != null) {
+							Logger.write("SENDING LINE TO TRANSLATOR:  "
+									+ chunk.getLine());
+							dataOut.println(host.getEncrypter().code(chunk.getLine(), peer.getPublicKey()));
+							String translatedLine = dataIn.readLine();
+							Logger.write("REPLY LINE FROM TRANSLTOR: "
+									+ translatedLine);
+							if (saveLine(translatedLine, chunk.getNumber()))
+								lineCounter++;
+						}
+					}

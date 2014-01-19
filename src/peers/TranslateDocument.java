@@ -90,6 +90,7 @@ public class TranslateDocument extends Thread {
 	 */
 	public void askForTranslate() {
 		peers = host.getHostsUpdaterManager().getActivePeers();
+		System.out.println(peers.size());
 		/*
 		 * Logger.write("askForTranslate size= "+peers.size());
 		 * 

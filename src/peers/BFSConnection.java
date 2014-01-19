@@ -17,7 +17,7 @@ import java.util.StringTokenizer;
 /*
  * Klasa zajmujaca sie przetwarzaniem danych przychodzacych do serwera bfs
  */
-public class BFSConnection {
+public class BFSConnection extends Thread {
 	private Socket socket;
 	private Socket respondSocket;
 	private Host host;
@@ -27,9 +27,14 @@ public class BFSConnection {
 		this.socket = socket;
 		this.host = host;
 		manager = host.getHostsUpdaterManager();
-		interpretRequest();
+		
 	}
 
+	@Override 
+	public synchronized void start() {
+		interpretRequest();
+		
+	};
 	/*
 	 * Glowna metoda tej klasy, interpretuje przychodzace zapytania do serwera bfs
 	 * Poprawne sa dwa typy zapytan:
@@ -118,6 +123,8 @@ public class BFSConnection {
 						peer = new Peer(new BasePeer(_bfsPort, _host), _port,
 								Encrypter.makePublicKey(_keyM, _keyE));
 						tempSet.add(peer);
+						manager.addPeers(tempSet);
+						tempSet.clear();
 					} catch (InvalidKeySpecException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -130,7 +137,7 @@ public class BFSConnection {
 					break;
 				}
 			}
-			manager.addPeers(tempSet);
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {

@@ -4,7 +4,9 @@ import java.net.ServerSocket;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Klasa reprezentujaca hosta. Argument 1-translator jest aktywyny.
@@ -15,7 +17,7 @@ public class Host {
 	private String trackerHost;
 	private int trackerPort;
 
-	private LinkedList<BasePeer> trackers;
+	private Collection<BasePeer> trackers;
 	
 	private String hostName;
 	private int serverPort;
@@ -51,8 +53,8 @@ public class Host {
 		hostName = "127.0.0.1";
 		trackerHost = "127.0.0.1";
 		trackerPort = 8000;
-		trackers = new LinkedList<BasePeer>();
-		trackers. add(new BasePeer(trackerPort, trackerHost));
+		trackers =  new LinkedList<BasePeer>();
+		trackers.add(new BasePeer(trackerPort, trackerHost));
 		serverPort = findFreePort();
 		
 		encrypter = new Encrypter();
@@ -124,7 +126,7 @@ public class Host {
 		return port;
 	}
 
-	public Collection<BasePeer> getTrackers() {
+	public Collection<? extends BasePeer> getTrackers() {
 		return trackers;
 	}
 

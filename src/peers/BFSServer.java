@@ -27,6 +27,7 @@ public class BFSServer extends Thread {
 				Socket socket = serverSocket.accept();
 				BFSConnection bfsConnection = new BFSConnection(
 						host, socket);
+				bfsConnection.start();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
