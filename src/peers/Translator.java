@@ -55,7 +55,9 @@ public class Translator {
 
 					while ((inputLine = in.readLine()) != null) {
 						Thread.sleep(5000);
-						outputLine = translate(inputLine);
+						outputLine = translate(host.getEncrypter().decode(inputLine, host.getEncrypter().getPrivateKey()));
+						//przekazuje klucz publiczny peera
+						//host.getEncrypter().code(outputLine);
 						out.println(outputLine);
 					}
 
