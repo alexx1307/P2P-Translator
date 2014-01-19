@@ -1,7 +1,6 @@
 package peers;
 
 import java.math.BigInteger;
-
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -10,10 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
 import java.security.spec.RSAPublicKeySpec;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -22,9 +18,6 @@ import javax.crypto.NoSuchPaddingException;
 
 import org.apache.commons.codec.binary.Hex;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
-
 /**
  * Klasa szyfrujaca dane przeslylane pomiedzy klientem a tlumaczem.
  * Moze sluzyc takze do stworzenia podpisu cyfrowego
@@ -32,9 +25,9 @@ import sun.misc.BASE64Encoder;
  * 
  */
 public class Encrypter {
-	Cipher cipher;
-	Key publicKey;
-	Key privateKey;
+	private Cipher cipher;
+	private Key publicKey;
+	private Key privateKey;
 
 	public Encrypter() {
 		try {
@@ -179,6 +172,10 @@ public class Encrypter {
 	
 	public Key getPublicKey() {
 		return publicKey;
+
+	}
+	public Key getPrivateKey() {
+		return privateKey;
 
 	}
 	/*

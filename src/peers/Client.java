@@ -18,16 +18,18 @@ public class Client extends Thread {
 	@Override
 	public void run() {
 		Logger.write("Starting client");
-		
+		TranslateDocument translateDocument=null;
+
 		System.out.println("Enter the file name to translate:");
 		Scanner in = new Scanner(System.in);
-		String filename=in.nextLine();
+		boolean listen=true;
+		while (listen) {
+			String filename = in.nextLine();
+			translateDocument = new TranslateDocument(filename, host);
+			translateDocument.start();
+		}
 		in.close();
 
-		TranslateDocument translateDocument = new TranslateDocument(
-				filename, host);
-		translateDocument.start();
-		
 		try {
 			translateDocument.join();
 		} catch (InterruptedException e) {

@@ -97,11 +97,12 @@ public class TranslateDocument extends Thread {
 		 * Logger.write("PEER "+peer.getHost()+" bfserver: "
 		 * +peer.getBFSPort()+" port "+peer.getPort()); }
 		 */
-
-		for (Peer peer : peers) {
-			Logger.write("Asking peer: " + peer.getPort() + " to translate");
-			if (peer.getPort() > 0 && (!activePeers.contains(peer))) {
-				createNewClientThread(peer);
+		synchronized (peers) {
+			for (Peer peer : peers) {
+				Logger.write("Asking peer: " + peer.getPort() + " to translate");
+				if (peer.getPort() > 0 && (!activePeers.contains(peer))) {
+					createNewClientThread(peer);
+				}
 			}
 		}
 	}
@@ -178,7 +179,7 @@ public class TranslateDocument extends Thread {
 						if (chunk != null) {
 							Logger.write("SENDING LINE TO TRANSLATOR:  "
 									+ chunk.getLine());
-							dataOut.println(chunk.getLine());
+							dataOut.println(host.getEncrypter().code(chunk.getLine(), peer.getPublicKey()));
 							String translatedLine = dataIn.readLine();
 							Logger.write("REPLY LINE FROM TRANSLTOR: "
 									+ translatedLine);

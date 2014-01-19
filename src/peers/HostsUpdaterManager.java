@@ -77,7 +77,9 @@ public class HostsUpdaterManager{
 			if(p.getPort()==0)
 				it.remove();
 		}
-		activePeers = new HashSet<Peer>(nextPeerSet);
+		synchronized(activePeers){
+			activePeers = new HashSet<Peer>(nextPeerSet);
+		}
 		nextPeerSet.clear();
 	}
 

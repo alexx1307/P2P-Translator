@@ -75,11 +75,11 @@ public class Host {
 	    
 	    threads = new ArrayList<Thread>();
 	}
-
-	private BFSServer BFSServer(Host host) {
-		// TODO Auto-generated method stub
-		return null;
+	
+	public Encrypter getEncrypter(){
+		return encrypter;
 	}
+
 
 	public String getTrackerHost() {
 		return trackerHost;
