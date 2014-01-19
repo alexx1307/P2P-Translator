@@ -1,6 +1,7 @@
 package peers;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Timer;
 
@@ -51,21 +52,23 @@ public class HostsUpdaterManager{
 		
 		return res;
 	}
-	public HashSet<Peer> getActivePeers(){
+	public HashSet<Peer> getBFSPeers(){
 		HashSet<Peer> res = activePeers;
 		res.addAll(tempPeers);
 		Peer self = host.getSelfPeer();
 		res.remove(self);
-		System.out.println("Self peer = "+self.getHost()+" "+self.getPort()+" "+self.getBFSPort());
-		System.out.println("Active peers number ="+res.size());
-		for(Peer p : res){
-			System.out.println("peer: "+p.getHost()+" "+p.getPort()+" "+p.getBFSPort()+" "+p.equals(self));
-		}
+		//System.out.println("Self peer = "+self.getHost()+" "+self.getPort()+" "+self.getBFSPort()+" "+host.getPublicKey().toString());
+		//System.out.println("Active peers number ="+res.size());
+		//for(Peer p : res){
+		//	System.out.println("peer: "+p.getHost()+" "+p.getPort()+" "+p.getBFSPort()+" "+p.getPublicKey().toString());
+		//}
+			
 		return res;
 	}
 
 	public void addPeers(HashSet<Peer> tempSet) {
 		nextPeerSet.addAll(tempSet);
+		
 	}
 
 	public void addPeer(Peer peer) {
@@ -75,8 +78,18 @@ public class HostsUpdaterManager{
 	
 	public void flipBuffers(){
 		nextPeerSet.remove(host.getSelfPeer());
-		activePeers = nextPeerSet;
+		Iterator<Peer> it = nextPeerSet.iterator();
+		while(it.hasNext()){
+			Peer p=it.next();
+			if(p.getPort()==0)
+				it.remove();
+		}
+		activePeers = new HashSet<Peer>(nextPeerSet);
 		nextPeerSet.clear();
+	}
+
+	public HashSet<Peer> getActivePeers() {
+		return activePeers;
 	}
 	
 }

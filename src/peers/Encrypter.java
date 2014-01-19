@@ -8,10 +8,12 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -45,13 +47,13 @@ public class Encrypter {
 			e.printStackTrace();
 		}
 		CreateKeys();
-
+		System.out.println(publicKey.toString());
 	}
 
 	private void CreateKeys() {
 		try {
 			KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-			kpg.initialize(1024);
+			kpg.initialize(1024,new SecureRandom( ));
 			KeyPair kp = kpg.genKeyPair();
 			publicKey = kp.getPublic();
 			privateKey = kp.getPrivate();

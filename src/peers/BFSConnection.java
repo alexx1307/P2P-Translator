@@ -29,23 +29,25 @@ public class BFSConnection {
 
 	public void interpretRequest() {
 		try {
-			
+
 			BufferedReader in = new BufferedReader(new InputStreamReader(
 					socket.getInputStream()));
-			
+
 			String inputLine, outputLine;
 			int state = 0;
 			HashSet<Peer> tempSet = new HashSet<Peer>();
 			while ((inputLine = in.readLine()) != null) {
-				if(inputLine.equals("GET PEERS")){
-					inputLine =in.readLine();
-					int bfsPort=Integer.parseInt(inputLine);
-					inputLine =in.readLine();
-					int controlPort=Integer.parseInt(inputLine);
-					
-					PublicKey pubKey=null;
+				if (inputLine.equals("GET PEERS")) {
+					inputLine = in.readLine();
+					int bfsPort = Integer.parseInt(inputLine);
+					inputLine = in.readLine();
+					int controlPort = Integer.parseInt(inputLine);
+
+					PublicKey pubKey = null;
 					try {
-						pubKey = Encrypter.makePublicKey(new BigInteger(in.readLine()),new BigInteger(in.readLine()));
+						pubKey = Encrypter.makePublicKey(
+								new BigInteger(in.readLine()), new BigInteger(
+										in.readLine()));
 					} catch (InvalidKeySpecException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -53,20 +55,36 @@ public class BFSConnection {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					manager.addPeer(new Peer( new BasePeer(bfsPort, socket.getInetAddress().getHostAddress()),controlPort,pubKey));
+					manager.addPeer(new Peer(new BasePeer(bfsPort, socket
+							.getInetAddress().getHostAddress()), controlPort,
+							pubKey));
 					state = 1;
-					respondSocket = new Socket(socket.getInetAddress().getHostAddress(),bfsPort);
-					PrintWriter out = new PrintWriter(respondSocket.getOutputStream(), true);
-					HashSet<Peer> peers = manager.getActivePeers();
+					respondSocket = new Socket(socket.getInetAddress()
+							.getHostAddress(), bfsPort);
+					PrintWriter out = new PrintWriter(
+							respondSocket.getOutputStream(), true);
+
+					HashSet<Peer> peers = manager.getBFSPeers();
 					out.println("PEERS RESPOND");
-					for(Peer peer : peers){
-						String peerLine = "Peer: "+peer.getHost()+" "+peer.getBFSPort()+" "+peer.getPort()+" "+((RSAPublicKey)peer.getPublicKey()).getModulus().toString()+" "+((RSAPublicKey)peer.getPublicKey()).getPublicExponent().toString();
+					for (Peer peer : peers) {
+						String peerLine = "Peer: "
+								+ peer.getHost()
+								+ " "
+								+ peer.getBFSPort()
+								+ " "
+								+ peer.getPort()
+								+ " "
+								+ ((RSAPublicKey) peer.getPublicKey())
+										.getModulus().toString()
+								+ " "
+								+ ((RSAPublicKey) peer.getPublicKey())
+										.getPublicExponent().toString();
 						out.println(peerLine);
 					}
-				}else if(inputLine.equals("PEERS RESPOND")){
+				} else if (inputLine.equals("PEERS RESPOND")) {
 					state = 2;
-					
-				}else if(state==2){
+
+				} else if (state == 2) {
 					StringTokenizer st = new StringTokenizer(inputLine);
 					int _port = 0;
 					int _bfsPort = 0;
@@ -82,12 +100,13 @@ public class BFSConnection {
 					if (st.hasMoreTokens())
 						_port = Integer.parseInt(st.nextToken());
 					if (st.hasMoreTokens())
-						_keyM = new BigInteger( st.nextToken());
+						_keyM = new BigInteger(st.nextToken());
 					if (st.hasMoreTokens())
-						_keyE = new BigInteger( st.nextToken());
+						_keyE = new BigInteger(st.nextToken());
 					Peer peer;
 					try {
-						peer = new Peer(new BasePeer(_bfsPort,_host),_port, Encrypter.makePublicKey(_keyM,_keyE));
+						peer = new Peer(new BasePeer(_bfsPort, _host), _port,
+								Encrypter.makePublicKey(_keyM, _keyE));
 						tempSet.add(peer);
 					} catch (InvalidKeySpecException e) {
 						// TODO Auto-generated catch block
@@ -96,8 +115,8 @@ public class BFSConnection {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					
-				}else{
+
+				} else {
 					break;
 				}
 			}
