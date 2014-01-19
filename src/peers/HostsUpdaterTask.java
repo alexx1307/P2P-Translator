@@ -8,7 +8,10 @@ import java.net.UnknownHostException;
 import java.security.interfaces.RSAPublicKey;
 import java.util.HashSet;
 import java.util.TimerTask;
-
+/*
+ * Klasa odpowiada za nawiazanie polaczen i wyslanie zapytan do peerow
+ * 
+ */
 public class HostsUpdaterTask extends TimerTask {
 	HashSet<BasePeer> sourcePeers;
 	Host host;

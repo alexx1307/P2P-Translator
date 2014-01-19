@@ -27,7 +27,7 @@ import sun.misc.BASE64Encoder;
 
 /**
  * Klasa szyfrujaca dane przeslylane pomiedzy klientem a tlumaczem.
- * 
+ * Moze sluzyc takze do stworzenia podpisu cyfrowego
  * @author lukasz
  * 
  */
@@ -47,9 +47,12 @@ public class Encrypter {
 			e.printStackTrace();
 		}
 		CreateKeys();
-		System.out.println(publicKey.toString());
 	}
 
+	/*
+	 * Funkcja tworzy pare kluczy 
+	 */
+	
 	private void CreateKeys() {
 		try {
 			KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
@@ -66,14 +69,17 @@ public class Encrypter {
 
 	}
 
-	public String code(String input, PublicKey otherPublicKey) {
+	/*
+	 * Funkcja szyfruje lancuch znakow przekazany przez input przy pomocy klucza (publicznego badz prywatnego).
+	 * Funkcja moze otrzymac string dowolnej dlugosci
+	 * Funkcja zwraca zaszyfrowany string w kodzie szesnatskowym
+	 */
+	public String code(String input, Key key) {
 		byte[] in;
 		try {
-			//in = new BASE64Decoder().decodeBuffer(input);
 			in = input.getBytes("UTF-8");
 
-			//PublicKey otherPub = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec((new BASE64Decoder().decodeBuffer(otherPublicKey))));
-			cipher.init(Cipher.ENCRYPT_MODE, otherPublicKey);
+			cipher.init(Cipher.ENCRYPT_MODE, key);
 			
 			byte[] encrypted = blockCipher(in,Cipher.ENCRYPT_MODE);
 
@@ -88,17 +94,16 @@ public class Encrypter {
 		
 	}
 
-	public String decode(String input, PublicKey otherPublicKey) {
+	/*
+	 * Funkcja otrzymuje zakodowany szesnastkowo, zaszyfrowany ciag znakow, odszyfowuje go i zapisuje w czytelnym formacie UTF-8
+	 * 
+	 */
+	public String decode(String input, Key key) {
 		byte[] in;
 		try {
 		
 			in = Hex.decodeHex(input.toCharArray());
-			//System.out.println(in.length);
-
-			//PublicKey otherPub = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec((new BASE64Decoder().decodeBuffer(otherPublicKey))));
-			//cipher.init(Cipher.DECRYPT_MODE, otherPub);
-			//in = cipher.doFinal(in);
-			cipher.init(Cipher.DECRYPT_MODE, privateKey);
+			cipher.init(Cipher.DECRYPT_MODE, key);
 			byte[] decrypted = blockCipher(in,Cipher.DECRYPT_MODE);
 
 			return new String(decrypted,"UTF-8");
@@ -108,6 +113,9 @@ public class Encrypter {
 		return null;
 	}
 
+	/*
+	 * pomocnicza funkcja, ktora konkatenuje dwa ciagi bajtow
+	 */
 	private byte[] append(byte[] prefix, byte[] suffix){
 		byte[] toReturn = new byte[prefix.length + suffix.length];
 		for (int i=0; i< prefix.length; i++){
@@ -119,6 +127,11 @@ public class Encrypter {
 		return toReturn;
 	}
 
+	/*
+	 * Pomocnicza funkcja, ktorej celem jest podzial duzego kawalka tekstu na krotsze, zdolne do zaszyfrowania algorytmem RSA,
+	 * Nastepnie metoda szyfruje (badz deszyfruje) takie kawalki tekstu i z powrotem laczy je w jeden ciag
+	 * 
+	 */
 	private byte[] blockCipher(byte[] bytes, int mode) throws IllegalBlockSizeException, BadPaddingException{
 		// string initialize 2 buffers.
 		// scrambled will hold intermediate results
@@ -163,24 +176,14 @@ public class Encrypter {
 
 		return toReturn;
 	}
+	
 	public Key getPublicKey() {
 		return publicKey;
 
 	}
-	
-	public static void main(String[] args) {
-		
-		Encrypter enc1 = new Encrypter();
-		Encrypter enc2 = new Encrypter();
-		String text;
-		String mid;
-		String res;
-		
-		text = "abcdefghij";
-		mid = enc1.code(text, (PublicKey) enc2.getPublicKey());
-		res = enc2.decode(mid, (PublicKey) enc1.getPublicKey());
-		System.out.println(res);
-	}
+	/*
+	 * Funckja tworzy klucz na podstawie dwoch liczb (wykladnika i modulo)
+	 */
 
 	public static PublicKey makePublicKey(BigInteger a , BigInteger b) throws InvalidKeySpecException, NoSuchAlgorithmException {
 		

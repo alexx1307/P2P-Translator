@@ -39,7 +39,7 @@ public class Host {
 		BFSServerPort = 8000;
 		bfsServer = new BFSServer(this);
 		encrypter = new Encrypter();
-		hostsUpdater = new HostsUpdaterManager(this, bfsServer);
+		hostsUpdater = new HostsUpdaterManager(this, bfsServer,5000);
 		bfsServer.start();
 		hostsUpdater.init();
 	}
@@ -63,7 +63,7 @@ public class Host {
 		bfsServer = new BFSServer(this);
 		
 		client = new Client(this);
-		hostsUpdater = new HostsUpdaterManager(this,bfsServer);
+		hostsUpdater = new HostsUpdaterManager(this,bfsServer,5000);
 		
 	    server.start();
 	    client.start();

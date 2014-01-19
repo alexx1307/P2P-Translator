@@ -7,7 +7,7 @@ import java.util.Timer;
 
 /**
  * Klasa odpowiadajaca za aktualizaje peerow.
- * Wysyla co okreslony czas zapytania do wszystkich peerow
+ * 
  * @author lukasz
  * 
  */
@@ -18,8 +18,8 @@ public class HostsUpdaterManager{
 	private HashSet<Peer> activePeers; //peery aktualnie aktywne
 	private BFSServer bfsServer;
 	private Host host;
-	private long delay;       //czestotliwosc aktualizacji w ms
-	public HostsUpdaterManager(Host host, BFSServer bfsServer,long delay) {
+	
+	public HostsUpdaterManager(Host host, BFSServer bfsServer) {
 		activePeers = new HashSet<Peer>();
 		nextPeerSet = new HashSet<Peer>();
 		sourcePeers = new HashSet<BasePeer>();
@@ -27,13 +27,12 @@ public class HostsUpdaterManager{
 		sourcePeers.addAll(host.getTrackers());
 		this.bfsServer = bfsServer;
 		this.host = host;
-		this.delay= delay;
 	}
 	
 	public void init() {
 		System.out.println("Starting looking for peers");
 		Timer timer = new Timer();
-		timer.schedule(new HostsUpdaterTask(this,host),10,delay);
+		timer.schedule(new HostsUpdaterTask(this,host),10,5000);
 		
 	}
 
@@ -48,6 +47,9 @@ public class HostsUpdaterManager{
 		}
 		tempPeers.clear();
 		res.remove(host.getSelfPeer());
+		//System.out.println("Number of source peers="+res.size());
+
+		
 		return res;
 	}
 	public HashSet<Peer> getBFSPeers(){
@@ -55,7 +57,20 @@ public class HostsUpdaterManager{
 		res.addAll(tempPeers);
 		Peer self = host.getSelfPeer();
 		res.remove(self);
+<<<<<<< HEAD
+		//System.out.println("Self peer = "+self.getHost()+" "+self.getPort()+" "+self.getBFSPort()+" "+host.getPublicKey().toString());
+		//System.out.println("Active peers number ="+res.size());
+		//for(Peer p : res){
+		//	System.out.println("peer: "+p.getHost()+" "+p.getPort()+" "+p.getBFSPort()+" "+p.getPublicKey().toString());
+		//}
 			
+=======
+		/*System.out.println("Self peer = "+self.getHost()+" "+self.getPort()+" "+self.getBFSPort());
+		System.out.println("Active peers number ="+res.size());
+		for(Peer p : res){
+			System.out.println("peer: "+p.getHost()+" "+p.getPort()+" "+p.getBFSPort()+" "+p.equals(self));
+		}*/
+>>>>>>> 6ecc6028343b64992e75cd1207c5ab682e1a39df
 		return res;
 	}
 

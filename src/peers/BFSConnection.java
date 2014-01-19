@@ -14,6 +14,9 @@ import java.security.spec.RSAPublicKeySpec;
 import java.util.HashSet;
 import java.util.StringTokenizer;
 
+/*
+ * Klasa zajmujaca sie przetwarzaniem danych przychodzacych do serwera bfs
+ */
 public class BFSConnection {
 	private Socket socket;
 	private Socket respondSocket;
@@ -27,6 +30,13 @@ public class BFSConnection {
 		interpretRequest();
 	}
 
+	/*
+	 * Glowna metoda tej klasy, interpretuje przychodzace zapytania do serwera bfs
+	 * Poprawne sa dwa typy zapytan:
+	 * GET PEERS czyli prosba o wyslanie wlasnej listy peerow
+	 * oraz 
+	 * PEERS RESPOND czyli odbior takiej wlasnie listy
+	 */
 	public void interpretRequest() {
 		try {
 
