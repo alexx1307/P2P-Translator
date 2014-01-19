@@ -26,7 +26,7 @@ public class HostsUpdaterTask extends TimerTask {
 	@Override
 	public void run() {
 		sourcePeers = manager.getSourcePeers();
-		System.out.println("source peers " + sourcePeers.size());
+		//System.out.println("source peers " + sourcePeers.size());
 		for (BasePeer peer : sourcePeers) {
 			SendBFSRequest(peer);
 		}
