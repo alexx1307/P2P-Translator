@@ -1,9 +1,8 @@
 package peers;
 
-import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.net.UnknownHostException;
 import java.security.PublicKey;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -28,6 +27,8 @@ public class Host {
 	private Server server;
 	private BFSServer bfsServer;
 	private HostsUpdaterManager hostsUpdater;
+	
+	private ArrayList<Thread> threads; 
 	
 	private boolean isTranslator;
 
@@ -71,6 +72,8 @@ public class Host {
 	    
 	    if(isTranslator)
 			translator = new Translator(this);
+	    
+	    threads = new ArrayList<Thread>();
 	}
 
 	private BFSServer BFSServer(Host host) {
@@ -136,6 +139,14 @@ public class Host {
 
 	public PublicKey getPublicKey() {
 		return (PublicKey) encrypter.getPublicKey();
+	}
+	
+	public void addThread(Thread t){
+		threads.add(t);
+	}
+	
+	public ArrayList<Thread> getThreads(){
+		return threads;
 	}
 	
 	public static void main(String[] args) {

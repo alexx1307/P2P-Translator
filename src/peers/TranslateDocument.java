@@ -21,14 +21,14 @@ import java.util.TreeMap;
 public class TranslateDocument extends Thread {
 
 	private String filename;
-	private TreeMap<Integer, String> original; 
-	private TreeMap<Integer, String> inProgress; 
-	private TreeMap<Integer, String> translated; 
+	private TreeMap<Integer, String> original;
+	private TreeMap<Integer, String> inProgress;
+	private TreeMap<Integer, String> translated;
 	private Host host;
 	private volatile boolean translateFinished;
 
-	private HashSet<Peer> activePeers; 
-	private HashSet<Peer> peers; 
+	private HashSet<Peer> activePeers;
+	private HashSet<Peer> peers;
 
 	public TranslateDocument(String filename, Host host) {
 		this.filename = filename;
@@ -37,17 +37,18 @@ public class TranslateDocument extends Thread {
 		this.original = new TreeMap<>();
 		this.inProgress = new TreeMap<>();
 		this.translated = new TreeMap<>();
-		//documentToLines();
+		this.activePeers = new HashSet<>();
+		documentToLines();
 	}
 
 	/**
 	 * Cykliczne zapytywanie co 5s o aktywynych tlumaczy, dopoki caly tekst nie
-	 * jest przetlumaczony. Jesli sa nowi to tworzymy dla nich watki i
-	 * wysylamy im tekst do tlumaczenia.
+	 * jest przetlumaczony. Jesli sa nowi to tworzymy dla nich watki i wysylamy
+	 * im tekst do tlumaczenia.
 	 */
 	@Override
 	public void run() {
-		Logger.write("Start translating file: "+filename);
+		Logger.write("Start translating file: " + filename);
 		while (!translateFinished) {
 			askForTranslate();
 			try {
@@ -56,23 +57,28 @@ public class TranslateDocument extends Thread {
 				e.printStackTrace();
 			}
 		}
+		for (Thread t : host.getThreads()) {
+			t.interrupt();
+		}
 		mergeDocument();
-		Logger.write("Translating "+filename+" terminated ");
+		Logger.write("Translating " + filename + " terminated ");
 	}
-	
+
 	/**
-	 * Funkcja po zakonczeniu tlumaczenia tworzy nowy plik w ktorym znajduje sie przetlumaczony tekst.
+	 * Funkcja po zakonczeniu tlumaczenia tworzy nowy plik w ktorym znajduje sie
+	 * przetlumaczony tekst.
 	 */
-	public void mergeDocument(){
-		
-		PrintWriter printwriter=null;
+	public void mergeDocument() {
+
+		PrintWriter printwriter = null;
 		try {
-			printwriter = new PrintWriter(new FileWriter("translated"+filename));
+			printwriter = new PrintWriter(new FileWriter("translated"
+					+ filename));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		for(int key: translated.keySet()){
-			String line=translated.get(key);
+		for (int key : translated.keySet()) {
+			String line = translated.get(key);
 			printwriter.println(line);
 		}
 		printwriter.close();
@@ -84,23 +90,26 @@ public class TranslateDocument extends Thread {
 	 */
 	public void askForTranslate() {
 		peers = host.getHostsUpdaterManager().getActivePeers();
-		Logger.write("askForTranslate size= "+peers.size());
-		for(Peer peer: peers){
-			Logger.write("PEER "+peer.getHost()+" bfserver: "+peer.getBFSPort()+" port "+peer.getPort());
-		}
-		
-		/*for (Peer peer : peers) {
-			Logger.write("Asking peer: "+peer.getPort()+" to translate");
-			if (!activePeers.contains(peer)) {
+		/*
+		 * Logger.write("askForTranslate size= "+peers.size());
+		 * 
+		 * for(Peer peer: peers){
+		 * Logger.write("PEER "+peer.getHost()+" bfserver: "
+		 * +peer.getBFSPort()+" port "+peer.getPort()); }
+		 */
+
+		for (Peer peer : peers) {
+			Logger.write("Asking peer: " + peer.getPort() + " to translate");
+			if (peer.getPort() > 0 && (!activePeers.contains(peer))) {
 				createNewClientThread(peer);
 			}
-		}*/
+		}
 	}
-	
+
 	/**
-	 * Tworzymy dla tlumacza nowy watek ktory rozmawia tylko z
-	 * nim. Watek dziala dopoki sa linie do wyslania czyli dokument nie jest
-	 * jeszcze przetlumaczony.
+	 * Tworzymy dla tlumacza nowy watek ktory rozmawia tylko z nim. Watek dziala
+	 * dopoki sa linie do wyslania czyli dokument nie jest jeszcze
+	 * przetlumaczony.
 	 * 
 	 * @param peer
 	 */
@@ -113,6 +122,8 @@ public class TranslateDocument extends Thread {
 
 			public void run() {
 				int translatorPort = 0;
+				Logger.write("Trying conect command to " + peer.getHost() + " "
+						+ peer.getPort());
 				try (Socket commandSocket = new Socket(peer.getHost(),
 						peer.getPort())) {
 					PrintWriter commandOut = new PrintWriter(
@@ -138,12 +149,23 @@ public class TranslateDocument extends Thread {
 							st.nextToken();
 						if (st.hasMoreTokens())
 							translatorPort = Integer.parseInt(st.nextToken());
+
+						Logger.write("TRANSLATOR START TRANSLATING ON PORT "
+								+ translatorPort);
 					} else if (commandReply.startsWith("201 ")) {
 						return;
 					} else {
 						return;
 					}
 
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+
+					Logger.write("Trying connect data to " + peer.getHost()
+							+ " " + translatorPort);
 					dataSocket = new Socket(peer.getHost(), translatorPort);
 					PrintWriter dataOut = new PrintWriter(
 							dataSocket.getOutputStream(), true);
@@ -153,10 +175,16 @@ public class TranslateDocument extends Thread {
 					int lineCounter = 0;
 					while (!translateFinished) {
 						Chunk chunk = getLine();
-						dataOut.println(chunk.getLine());
-						String translatedLine = dataIn.readLine();
-						if(saveLine(translatedLine, chunk.getNumber()))
-							lineCounter++;
+						if (chunk != null) {
+							Logger.write("SENDING LINE TO TRANSLATOR:  "
+									+ chunk.getLine());
+							dataOut.println(chunk.getLine());
+							String translatedLine = dataIn.readLine();
+							Logger.write("REPLY LINE FROM TRANSLTOR: "
+									+ translatedLine);
+							if (saveLine(translatedLine, chunk.getNumber()))
+								lineCounter++;
+						}
 					}
 
 					commandSend = "RANK " + lineCounter;
@@ -207,25 +235,27 @@ public class TranslateDocument extends Thread {
 			line = original.firstEntry().getValue();
 			number = original.firstEntry().getKey();
 			original.remove(number);
+			inProgress.put(number, line);
 			chunk = new Chunk(line, number);
 		} else if (!inProgress.isEmpty()) {
 			line = inProgress.firstEntry().getValue();
 			number = inProgress.firstEntry().getKey();
-			inProgress.remove(number);
 			chunk = new Chunk(line, number);
-		} else{
-			translateFinished=true;
+		} else {
+			translateFinished = true;
 		}
 		return chunk;
 	}
 
 	/**
-	 * Zapisuje dana linie do translated.
-	 * Zwraca true jesli to ta linia zostala wpisana do translated.
+	 * Zapisuje dana linie do translated. Zwraca true jesli to ta linia zostala
+	 * wpisana do translated.
+	 * 
 	 * @param line
 	 */
 	public synchronized boolean saveLine(String line, int number) {
-		if (!translated.containsKey(line)){
+		if (!translated.containsKey(number)) {
+			inProgress.remove(number);
 			translated.put(number, line);
 			return true;
 		}
