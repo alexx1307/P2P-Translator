@@ -22,7 +22,7 @@ public class Server extends Thread {
 
 	@Override
 	public void run() {
-		System.out.println("Server is running on port: " + port);
+		Logger.write("Server is running on port: " + port);
 		boolean listen = true;
 		try (ServerSocket serverSocket = new ServerSocket(port)) {
 			while (listen) {

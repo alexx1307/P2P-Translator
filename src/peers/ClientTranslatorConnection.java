@@ -32,12 +32,17 @@ public class ClientTranslatorConnection extends Thread {
 			String inputLine, outputLine;
 
 			while ((inputLine = in.readLine()) != null) {
-				if(inputLine.equals("TRANSLATE")){
+				if(inputLine.startsWith("TRANSLATE ")){
 					int port=host.getTranslator().createNewTranslatorThread();
-					outputLine="OK "+host.getHostName()+" "+port;
+					outputLine="200 ACCEPT "+port;
 					out.println(outputLine);
-				}else if(inputLine.equals("DATA")){
-					
+				}else if(inputLine.startsWith("RANK ")){
+					outputLine="202 RANK RECEIVE";
+					out.println(outputLine);
+				}else if(inputLine.startsWith("END ")){
+					outputLine="203 TRANSLATE ENDED CORRECTLY";
+					out.println(outputLine);
+					break;
 				}else{
 					break;
 				}

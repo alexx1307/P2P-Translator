@@ -6,32 +6,22 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.LinkedList;
 
 /**
  * Klasa reprezentujaca tlumacza.
  * 
  * @author lukasz
- *
+ * 
  */
 public class Translator {
 	private int port;
-	private int trackerPort;
-	private String trackerHost;
-	private String hostName;
 	private Host host;
 
 	public Translator(Host host) {
-		this.trackerHost = host.getTrackerHost();
-		this.trackerPort = host.getTrackerPort();
 		this.port = host.getServerPort();
-		this.hostName = host.getHostName();
 		this.host = host;
 
-		System.out.println("Starting translator on port: " + port);
-
-		//register();
+		Logger.write("Starting translator on port: " + port);
 	}
 
 	public synchronized String translate(String s) {
@@ -39,38 +29,22 @@ public class Translator {
 		return result;
 	}
 
-	public void register() {
-		try {
-			Socket socket = new Socket(trackerHost, trackerPort);
-			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-			BufferedReader in = new BufferedReader(new InputStreamReader(
-					socket.getInputStream()));
-			String inputLine;
-			out.println("REGISTER " + hostName + " " + port);
-			while((inputLine=in.readLine())!=null){
-			  if(inputLine.equals("BYE"))
-				  break;
-			  out.println("BYE");
-			}
-			socket.close();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
+	/**
+	 * Watek na ktorym tlumacz oczekuje na dane. Wersja wstepna, tlumacz czeka
+	 * 5s, zamienia litery na duze, i wysyla klientowi.
+	 */
 	public int createNewTranslatorThread() {
 		final int port = host.findFreePort();
 		Thread t = new Thread() {
 			Socket socket;
 
 			public void run() {
-				System.out.println("TranslatorThread is running on port: "
-						+ port);
+				Logger.write("TranslatorThread is running on port: " + port);
 				try (ServerSocket serverSocket = new ServerSocket(port)) {
 
 					socket = serverSocket.accept();
+					
+					Logger.write("TranslatorThread accept connection from port: "+socket.getPort());
 
 					PrintWriter out = new PrintWriter(socket.getOutputStream(),
 							true);
@@ -80,7 +54,7 @@ public class Translator {
 					String inputLine, outputLine;
 
 					while ((inputLine = in.readLine()) != null) {
-						Thread.sleep(5);
+						Thread.sleep(5000);
 						outputLine = translate(inputLine);
 						out.println(outputLine);
 					}
@@ -96,9 +70,12 @@ public class Translator {
 						e.printStackTrace();
 					}
 				}
+				Logger.write("Translator Thread on port "+port+" ended");
 			}
 		};
 		t.start();
+		host.addThread(t);
+		
 		return port;
 	}
 }

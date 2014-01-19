@@ -47,7 +47,7 @@ public class HostsUpdaterManager{
 		}
 		tempPeers.clear();
 		res.remove(host.getSelfPeer());
-		System.out.println("Number of source peers="+res.size());
+		//System.out.println("Number of source peers="+res.size());
 
 		
 		return res;

@@ -1,5 +1,7 @@
 package peers;
 
+import java.util.Scanner;
+
 /**
  * Klasa klienta.
  * 
@@ -16,8 +18,16 @@ public class Client extends Thread {
 	@Override
 	public void run() {
 		Logger.write("Starting client");
-		TranslateDocument translateDocument=new TranslateDocument("tekst.txt",host);
+		
+		System.out.println("Enter the file name to translate:");
+		Scanner in = new Scanner(System.in);
+		String filename=in.nextLine();
+		in.close();
+
+		TranslateDocument translateDocument = new TranslateDocument(
+				filename, host);
 		translateDocument.start();
+		
 		try {
 			translateDocument.join();
 		} catch (InterruptedException e) {
