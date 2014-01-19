@@ -67,7 +67,7 @@ public class Encrypter {
 	 * Funkcja moze otrzymac string dowolnej dlugosci
 	 * Funkcja zwraca zaszyfrowany string w kodzie szesnatskowym
 	 */
-	public String code(String input, Key key) {
+	public synchronized String code(String input, Key key) {
 		byte[] in;
 		try {
 			in = input.getBytes("UTF-8");
@@ -91,7 +91,7 @@ public class Encrypter {
 	 * Funkcja otrzymuje zakodowany szesnastkowo, zaszyfrowany ciag znakow, odszyfowuje go i zapisuje w czytelnym formacie UTF-8
 	 * 
 	 */
-	public String decode(String input, Key key) {
+	public synchronized String decode(String input, Key key) {
 		byte[] in;
 		try {
 		

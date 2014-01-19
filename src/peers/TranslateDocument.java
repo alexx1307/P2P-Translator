@@ -7,13 +7,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.math.BigInteger;
 import java.net.Socket;
+import java.security.interfaces.RSAPublicKey;
 import java.util.HashSet;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 /**
- * Tlumaczenie dokumentu w osobnym watku.
+ * Klasa sluzaca do tlumaczenia dokumentu w osobnym watku.
  * 
  * @author lukasz
  * 
@@ -30,10 +32,15 @@ public class TranslateDocument extends Thread {
 	private HashSet<Peer> activePeers;
 	private HashSet<Peer> peers;
 
+	private String language;
+	private String price;
+
 	public TranslateDocument(String filename, Host host) {
 		this.filename = filename;
 		this.host = host;
 		this.translateFinished = false;
+		this.language = "ENGLISH";
+		this.price = "100$";
 		this.original = new TreeMap<>();
 		this.inProgress = new TreeMap<>();
 		this.translated = new TreeMap<>();
@@ -43,8 +50,8 @@ public class TranslateDocument extends Thread {
 
 	/**
 	 * Cykliczne zapytywanie co 5s o aktywynych tlumaczy, dopoki caly tekst nie
-	 * jest przetlumaczony. Jesli sa nowi to tworzymy dla nich watki i wysylamy
-	 * im tekst do tlumaczenia.
+	 * jest przetlumaczony. Jesli sa nowi tlumacze to tworzymy dla nich watki i
+	 * wysylamy im tekst do tlumaczenia.
 	 */
 	@Override
 	public void run() {
@@ -90,13 +97,7 @@ public class TranslateDocument extends Thread {
 	 */
 	public void askForTranslate() {
 		peers = host.getHostsUpdaterManager().getActivePeers();
-		/*
-		 * Logger.write("askForTranslate size= "+peers.size());
-		 * 
-		 * for(Peer peer: peers){
-		 * Logger.write("PEER "+peer.getHost()+" bfserver: "
-		 * +peer.getBFSPort()+" port "+peer.getPort()); }
-		 */
+
 		synchronized (peers) {
 			for (Peer peer : peers) {
 				Logger.write("Asking peer: " + peer.getPort() + " to translate");
@@ -123,8 +124,8 @@ public class TranslateDocument extends Thread {
 
 			public void run() {
 				int translatorPort = 0;
-				Logger.write("Trying conect command to " + peer.getHost() + " "
-						+ peer.getPort());
+				Logger.write("Trying connect by socket command to "
+						+ peer.getHost() + " " + peer.getPort());
 				try (Socket commandSocket = new Socket(peer.getHost(),
 						peer.getPort())) {
 					PrintWriter commandOut = new PrintWriter(
@@ -134,8 +135,13 @@ public class TranslateDocument extends Thread {
 									commandSocket.getInputStream()));
 
 					String commandSend, commandReply;
+					BigInteger keyM = ((RSAPublicKey) host.getPublicKey())
+							.getModulus();
+					BigInteger keyE = ((RSAPublicKey) host.getPublicKey())
+							.getPublicExponent();
 
-					commandSend = "TRANSLATE " + filename;
+					commandSend = "TRANSLATE " + filename + " " + language
+							+ " " + price + " " + keyM + " " + keyE;
 					commandOut.println(commandSend);
 
 					commandReply = commandIn.readLine();
@@ -154,8 +160,10 @@ public class TranslateDocument extends Thread {
 						Logger.write("TRANSLATOR START TRANSLATING ON PORT "
 								+ translatorPort);
 					} else if (commandReply.startsWith("201 ")) {
+						Logger.write("Translator rejected connection");
 						return;
 					} else {
+						Logger.write("Unexpected error");
 						return;
 					}
 
@@ -165,8 +173,8 @@ public class TranslateDocument extends Thread {
 						e.printStackTrace();
 					}
 
-					Logger.write("Trying connect data to " + peer.getHost()
-							+ " " + translatorPort);
+					Logger.write("Trying connect by socket data to "
+							+ peer.getHost() + " " + translatorPort);
 					dataSocket = new Socket(peer.getHost(), translatorPort);
 					PrintWriter dataOut = new PrintWriter(
 							dataSocket.getOutputStream(), true);
@@ -179,8 +187,12 @@ public class TranslateDocument extends Thread {
 						if (chunk != null) {
 							Logger.write("SENDING LINE TO TRANSLATOR:  "
 									+ chunk.getLine());
-							dataOut.println(host.getEncrypter().code(chunk.getLine(), peer.getPublicKey()));
+							dataOut.println(host.getEncrypter().code(
+									chunk.getLine(), peer.getPublicKey()));
 							String translatedLine = dataIn.readLine();
+							translatedLine = host.getEncrypter().decode(
+									translatedLine,
+									host.getEncrypter().getPrivateKey());
 							Logger.write("REPLY LINE FROM TRANSLTOR: "
 									+ translatedLine);
 							if (saveLine(translatedLine, chunk.getNumber()))

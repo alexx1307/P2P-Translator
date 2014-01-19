@@ -4,7 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.math.BigInteger;
 import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.StringTokenizer;
 
 /**
  * Klasa obslugujaca polaczenie pomiedzy klientem a tlumaczem.
@@ -33,7 +37,27 @@ public class ClientTranslatorConnection extends Thread {
 
 			while ((inputLine = in.readLine()) != null) {
 				if(inputLine.startsWith("TRANSLATE ")){
-					int port=host.getTranslator().createNewTranslatorThread();
+					StringTokenizer st = new StringTokenizer(inputLine);
+					String filename=null;
+					String language=null;
+					String price=null;
+					BigInteger keyM = null;
+					BigInteger keyE = null;
+					
+					if (st.hasMoreTokens())
+						st.nextToken();
+					if (st.hasMoreTokens())
+						filename = st.nextToken();
+					if (st.hasMoreTokens())
+						language = st.nextToken();
+					if (st.hasMoreTokens())
+						price = st.nextToken();
+					if (st.hasMoreTokens())
+						keyM = new BigInteger(st.nextToken());
+					if (st.hasMoreTokens())
+						keyE = new BigInteger(st.nextToken());
+					
+					int port=host.getTranslator().createNewTranslatorThread(filename,language,price,Encrypter.makePublicKey(keyM, keyE));
 					outputLine="200 ACCEPT "+port;
 					out.println(outputLine);
 				}else if(inputLine.startsWith("RANK ")){
@@ -48,6 +72,10 @@ public class ClientTranslatorConnection extends Thread {
 				}
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InvalidKeySpecException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		} finally {
 			if (socket != null) {

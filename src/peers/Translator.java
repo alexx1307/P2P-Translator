@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.PublicKey;
 
 /**
  * Klasa reprezentujaca tlumacza.
@@ -33,8 +34,9 @@ public class Translator {
 	 * Watek na ktorym tlumacz oczekuje na dane. Wersja wstepna, tlumacz czeka
 	 * 5s, zamienia litery na duze, i wysyla klientowi.
 	 */
-	public int createNewTranslatorThread() {
+	public int createNewTranslatorThread(String filename, String language, String price, PublicKey pk) {
 		final int port = host.findFreePort();
+		final PublicKey publicKey=pk;
 		Thread t = new Thread() {
 			Socket socket;
 
@@ -56,9 +58,7 @@ public class Translator {
 					while ((inputLine = in.readLine()) != null) {
 						Thread.sleep(5000);
 						outputLine = translate(host.getEncrypter().decode(inputLine, host.getEncrypter().getPrivateKey()));
-						//przekazuje klucz publiczny peera
-						//host.getEncrypter().code(outputLine);
-						out.println(outputLine);
+						out.println(host.getEncrypter().code(outputLine, publicKey));
 					}
 
 				} catch (IOException e) {
