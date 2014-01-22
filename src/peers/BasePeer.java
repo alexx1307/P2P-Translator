@@ -1,5 +1,11 @@
 package peers;
 
+/**
+ * Klasa reprezentujaca BasePeer.
+ * 
+ * @author lukasz
+ *
+ */
 public class BasePeer {
 	private String host;
 	private int bfsPort;

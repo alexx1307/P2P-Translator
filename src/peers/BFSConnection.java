@@ -10,11 +10,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.RSAPublicKeySpec;
 import java.util.HashSet;
 import java.util.StringTokenizer;
 
-/*
+/**
  * Klasa zajmujaca sie przetwarzaniem danych przychodzacych do serwera bfs
  */
 public class BFSConnection extends Thread {

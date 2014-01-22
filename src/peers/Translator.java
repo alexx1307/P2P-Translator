@@ -25,16 +25,19 @@ public class Translator {
 		Logger.write("Starting translator on port: " + port);
 	}
 
+	/*
+	 * Funkcja która tłumaczy podany String.
+	 */
 	public synchronized String translate(String s) {
 		String result = s.toUpperCase();
 		return result;
 	}
 
 	/**
-	 * Watek na ktorym tlumacz oczekuje na dane. Wersja wstepna, tlumacz czeka
-	 * 5s, zamienia litery na duze, i wysyla klientowi.
+	 * Funkcja tworzaca watek na ktorym tlumacz oczekuje na dane. Wersja wstepna, tlumacz czeka
+	 * 5s, zamienia litery na duze, i wysyla klientowi. Przesyłanie danych jest kodowane.
 	 */
-	public int createNewTranslatorThread(String filename, String language, String price, PublicKey pk) {
+	public int createNewTranslatorThread(String filename, String langFrom, String langTo, String price, PublicKey pk) {
 		final int port = host.findFreePort();
 		final PublicKey publicKey=pk;
 		Thread t = new Thread() {

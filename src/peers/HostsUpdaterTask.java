@@ -9,7 +9,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.HashSet;
 import java.util.TimerTask;
 
-/*
+/**
  * Klasa odpowiada za nawiazanie polaczen i wyslanie zapytan do peerow
  * 
  */

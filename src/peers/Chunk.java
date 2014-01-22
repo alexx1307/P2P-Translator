@@ -1,5 +1,8 @@
 package peers;
 
+/**
+ * Klasa reprezentujaca pojedyncza linie z pliku.
+ */
 public class Chunk {
 	private String line;
 	private int number;

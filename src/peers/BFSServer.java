@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-/*
+/**
  * Watek serwera bfs, ktorego celem jest przechwytywanie zapytan dotyczacych aktualizacji sieci peerow, po nawiazaniu polaczenia, 
  * dalsza kontrola i interpretacja zajmuje sie klasa BFSConnection
  */

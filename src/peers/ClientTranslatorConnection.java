@@ -39,7 +39,8 @@ public class ClientTranslatorConnection extends Thread {
 				if(inputLine.startsWith("TRANSLATE ")){
 					StringTokenizer st = new StringTokenizer(inputLine);
 					String filename=null;
-					String language=null;
+					String langFrom=null;
+					String langTo=null;
 					String price=null;
 					BigInteger keyM = null;
 					BigInteger keyE = null;
@@ -49,7 +50,9 @@ public class ClientTranslatorConnection extends Thread {
 					if (st.hasMoreTokens())
 						filename = st.nextToken();
 					if (st.hasMoreTokens())
-						language = st.nextToken();
+						langFrom = st.nextToken();
+					if (st.hasMoreTokens())
+						langTo = st.nextToken();
 					if (st.hasMoreTokens())
 						price = st.nextToken();
 					if (st.hasMoreTokens())
@@ -57,7 +60,7 @@ public class ClientTranslatorConnection extends Thread {
 					if (st.hasMoreTokens())
 						keyE = new BigInteger(st.nextToken());
 					
-					int port=host.getTranslator().createNewTranslatorThread(filename,language,price,Encrypter.makePublicKey(keyM, keyE));
+					int port=host.getTranslator().createNewTranslatorThread(filename,langFrom,langTo,price,Encrypter.makePublicKey(keyM, keyE));
 					outputLine="200 ACCEPT "+port;
 					out.println(outputLine);
 				}else if(inputLine.startsWith("RANK ")){

@@ -42,7 +42,7 @@ public class Encrypter {
 		CreateKeys();
 	}
 
-	/*
+	/**
 	 * Funkcja tworzy pare kluczy 
 	 */
 	
@@ -62,7 +62,7 @@ public class Encrypter {
 
 	}
 
-	/*
+	/**
 	 * Funkcja szyfruje lancuch znakow przekazany przez input przy pomocy klucza (publicznego badz prywatnego).
 	 * Funkcja moze otrzymac string dowolnej dlugosci
 	 * Funkcja zwraca zaszyfrowany string w kodzie szesnatskowym
@@ -87,7 +87,7 @@ public class Encrypter {
 		
 	}
 
-	/*
+	/**
 	 * Funkcja otrzymuje zakodowany szesnastkowo, zaszyfrowany ciag znakow, odszyfowuje go i zapisuje w czytelnym formacie UTF-8
 	 * 
 	 */
@@ -106,7 +106,7 @@ public class Encrypter {
 		return null;
 	}
 
-	/*
+	/**
 	 * pomocnicza funkcja, ktora konkatenuje dwa ciagi bajtow
 	 */
 	private byte[] append(byte[] prefix, byte[] suffix){
@@ -120,7 +120,7 @@ public class Encrypter {
 		return toReturn;
 	}
 
-	/*
+	/**
 	 * Pomocnicza funkcja, ktorej celem jest podzial duzego kawalka tekstu na krotsze, zdolne do zaszyfrowania algorytmem RSA,
 	 * Nastepnie metoda szyfruje (badz deszyfruje) takie kawalki tekstu i z powrotem laczy je w jeden ciag
 	 * 
@@ -178,7 +178,7 @@ public class Encrypter {
 		return privateKey;
 
 	}
-	/*
+	/**
 	 * Funckja tworzy klucz na podstawie dwoch liczb (wykladnika i modulo)
 	 */
 

@@ -32,14 +32,16 @@ public class TranslateDocument extends Thread {
 	private HashSet<Peer> activePeers;
 	private HashSet<Peer> peers;
 
-	private String language;
+	private String langFrom;
+	private String langTo;
 	private String price;
 
 	public TranslateDocument(String filename, Host host) {
 		this.filename = filename;
 		this.host = host;
 		this.translateFinished = false;
-		this.language = "ENGLISH";
+		this.langFrom="ENGLISH";
+		this.langTo="ENGLISH";
 		this.price = "100$";
 		this.original = new TreeMap<>();
 		this.inProgress = new TreeMap<>();
@@ -92,7 +94,7 @@ public class TranslateDocument extends Thread {
 	}
 
 	/**
-	 * Pobiera z hosta liste aktywynych peerow, nastepnie wysyla w osobnych
+	 * Funkcja pobiera z hosta liste aktywnych peerow, nastepnie wysyla w osobnych
 	 * watkach zapytanie o tlumaczenie do wszystkich peerow.
 	 */
 	public void askForTranslate() {
@@ -109,7 +111,7 @@ public class TranslateDocument extends Thread {
 	}
 
 	/**
-	 * Tworzymy dla tlumacza nowy watek ktory rozmawia tylko z nim. Watek dziala
+	 * Funkcja tworzy dla tlumacza nowy watek ktory rozmawia tylko z nim. Watek dziala
 	 * dopoki sa linie do wyslania czyli dokument nie jest jeszcze
 	 * przetlumaczony.
 	 * 
@@ -140,7 +142,7 @@ public class TranslateDocument extends Thread {
 					BigInteger keyE = ((RSAPublicKey) host.getPublicKey())
 							.getPublicExponent();
 
-					commandSend = "TRANSLATE " + filename + " " + language
+					commandSend = "TRANSLATE " + filename + " " + langFrom + " " + langFrom
 							+ " " + price + " " + keyM + " " + keyE;
 					commandOut.println(commandSend);
 
@@ -234,7 +236,7 @@ public class TranslateDocument extends Thread {
 	}
 
 	/**
-	 * Pobiera jedna linie do przetlumaczenia, jesli nie ma juz lini wolnych to
+	 * Funkcja pobiera jedna linie do przetlumaczenia, jesli nie ma juz lini wolnych to
 	 * pobiera linie ktora jest w trakcie tlumaczenia. Jeli caly tekst jest juz
 	 * przetlumaczony zwraca null.
 	 * 
@@ -261,7 +263,7 @@ public class TranslateDocument extends Thread {
 	}
 
 	/**
-	 * Zapisuje dana linie do translated. Zwraca true jesli to ta linia zostala
+	 * Funkcja zapisuje dana linie do translated. Zwraca true jesli to ta linia zostala
 	 * wpisana do translated.
 	 * 
 	 * @param line
@@ -276,7 +278,7 @@ public class TranslateDocument extends Thread {
 	}
 
 	/**
-	 * Otwiera plik tekstowy i kazda linie zapisuje do TreeMap.
+	 * Funkcja otwiera plik tekstowy i kazda linie zapisuje do TreeMap.
 	 */
 	public void documentToLines() {
 		BufferedReader br = null;
